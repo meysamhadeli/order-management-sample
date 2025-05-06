@@ -1,4 +1,4 @@
-namespace IdentityServer.Pages.Logout;
+namespace OrderManagement.Identities.Pages.Account.Logout;
 
 public class LoggedOutViewModel
 {

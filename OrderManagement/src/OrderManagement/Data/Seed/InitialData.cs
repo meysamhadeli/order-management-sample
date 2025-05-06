@@ -26,6 +26,30 @@ public static class InitialData
                         SecurityStamp = Guid.NewGuid().ToString(),
                         EmailConfirmed = true
                     },
+                    new()
+                    {
+                        Id = Guid.CreateVersion7().ToString(),
+                        UserName = "test1",
+                        Email = "test1@test.com",
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        EmailConfirmed = true
+                    },
+                    new()
+                    {
+                        Id = Guid.CreateVersion7().ToString(),
+                        UserName = "test2",
+                        Email = "test2@test.com",
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        EmailConfirmed = true
+                    },
+                    new()
+                    {
+                        Id = Guid.CreateVersion7().ToString(),
+                        UserName = "test3",
+                        Email = "test3@test.com",
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        EmailConfirmed = true
+                    },
                 };
     }
 }

@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Data;
-using OrderManagement.Orders.Models;
+using OrderManagement.Orders.Dtos;
+using OrderManagement.Orders.Exceptions;
 
-namespace YourNamespace.Features.Orders
+namespace OrderManagement.Orders.Features
 {
     public class GetOrderByIdEndpoint : IMinimalEndpoint
     {
@@ -33,9 +34,9 @@ namespace YourNamespace.Features.Orders
         }
     }
 
-    public record GetOrderByIdQuery(Guid OrderId) : IRequest<OrderResponseDto>;
+    public record GetOrderByIdQuery(Guid OrderId) : IRequest<OrderDto>;
 
-    public class GetOrderByIdHandler : IRequestHandler<GetOrderByIdQuery, OrderResponseDto>
+    public class GetOrderByIdHandler : IRequestHandler<GetOrderByIdQuery, OrderDto>
     {
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUserProvider _currentUserProvider;
@@ -48,7 +49,7 @@ namespace YourNamespace.Features.Orders
             _currentUserProvider = currentUserProvider;
         }
 
-        public async Task<OrderResponseDto> Handle(
+        public async Task<OrderDto> Handle(
             GetOrderByIdQuery request,
             CancellationToken cancellationToken)
         {
@@ -60,7 +61,7 @@ namespace YourNamespace.Features.Orders
 
             if (order == null)
             {
-                throw new KeyNotFoundException("Order not found");
+                throw new OrderNotFoundException(request.OrderId);
             }
 
             // Authorization check
@@ -69,23 +70,7 @@ namespace YourNamespace.Features.Orders
                 throw new ForbiddenException("Unauthorized to view this order");
             }
 
-            return MapToResponseDto(order);
-        }
-
-        private static OrderResponseDto MapToResponseDto(Order order)
-        {
-            return new OrderResponseDto(
-                order.Id,
-                order.CustomerId,
-                order.OrderDate,
-                order.Status.ToString(),
-                order.TotalAmount,
-                order.OrderItems.Select(item => new OrderItemResponseDto(
-                    item.Id,
-                    item.Product,
-                    item.UnitPrice,
-                    item.Quantity,
-                    item.TotalPrice)).ToList());
+            return OrderMappings.MapToOrderDto(order);
         }
     }
 

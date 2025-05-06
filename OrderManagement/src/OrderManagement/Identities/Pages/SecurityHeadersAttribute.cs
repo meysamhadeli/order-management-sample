@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityServer.Pages;
+namespace OrderManagement.Identities.Pages;
 
 public sealed class SecurityHeadersAttribute : ActionFilterAttribute
 {

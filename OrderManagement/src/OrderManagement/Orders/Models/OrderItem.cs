@@ -1,4 +1,5 @@
 using BuildingBlocks.Exception;
+using OrderManagement.Orders.Exceptions;
 
 namespace OrderManagement.Orders.Models;
 
@@ -21,10 +22,10 @@ public record OrderItem
         int quantity = 1)
     {
         if (quantity <= 0)
-            throw new DomainException("Quantity must be positive");
+            throw new InvalidQuantityException();
 
         if (unitPrice <= 0)
-            throw new DomainException("Unit price must be positive");
+            throw new invalidUnitPriceException();
 
         return new OrderItem
                {

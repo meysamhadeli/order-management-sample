@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer.Pages.Login;
+namespace OrderManagement.Identities.Pages.Account.Login;
 
 public class InputModel
 {

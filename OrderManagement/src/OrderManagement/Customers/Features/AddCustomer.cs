@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using OrderManagement.Customers.Dtos;
+using OrderManagement.Customers.Enums;
+using OrderManagement.Customers.Exceptions;
 using OrderManagement.Customers.Models;
 using OrderManagement.Data;
 using OrderManagement.Identities.Constants;
 
-namespace YourNamespace.Features.Customers
+namespace OrderManagement.Customers.Features
 {
     public class AddCustomerEndpoint : IMinimalEndpoint
     {
@@ -26,6 +29,7 @@ namespace YourNamespace.Features.Customers
                         request.LastName,
                         request.Email,
                         request.UserId,
+                        request.role,
                         request.InitialBalance));
 
                     return Results.Created($"{EndpointConfig.BaseApiPath}/customers/{result.Id}", result);
@@ -46,46 +50,55 @@ namespace YourNamespace.Features.Customers
         string LastName,
         string Email,
         string UserId,
-        decimal InitialBalance = 0) : IRequest<CustomerResponseDto>;
+        Role role,
+        decimal InitialBalance = 0
+        ) : IRequest<CustomerDto>;
 
     public record AddCustomerRequestDto(
         string FirstName,
         string LastName,
         string Email,
         string UserId,
-        decimal InitialBalance = 0);
+        Role role = Role.User,
+        decimal InitialBalance = 0
+        );
 
-    public class AddCustomerHandler : IRequestHandler<AddCustomerCommand, CustomerResponseDto>
+    public class AddCustomerHandler : IRequestHandler<AddCustomerCommand, CustomerDto>
     {
         private readonly AppDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly ICurrentUserProvider _currentUserProvide;
+        private readonly ICurrentUserProvider _currentUserProvider;
 
         public AddCustomerHandler(
             AppDbContext dbContext,
             UserManager<IdentityUser> userManager,
-            ICurrentUserProvider currentUserProvide)
+            ICurrentUserProvider currentUserProvider)
         {
             _dbContext = dbContext;
             _userManager = userManager;
-            _currentUserProvide = currentUserProvide;
+            _currentUserProvider = currentUserProvider;
         }
 
-        public async Task<CustomerResponseDto> Handle(
+        public async Task<CustomerDto> Handle(
             AddCustomerCommand request,
             CancellationToken cancellationToken)
         {
-            if (!_currentUserProvide.IsAdmin())
+            if (!_currentUserProvider.IsAdmin())
             {
                 throw new ForbiddenException("Unauthorized to create order for this customer");
             }
 
             // Check if user exists
             var user = await _userManager.FindByIdAsync(request.UserId);
+
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found");
+                throw new UserNotFoundException(request.UserId);
             }
+
+            var role = request.role.ToString().ToLower(System.Globalization.CultureInfo.CurrentCulture);
+
+            await _userManager.AddToRoleAsync(user, role);;
 
             // Check if customer already exists for this user
             var existingCustomer = await _dbContext.Customers
@@ -93,7 +106,7 @@ namespace YourNamespace.Features.Customers
 
             if (existingCustomer != null)
             {
-                throw new InvalidOperationException("Customer already exists for this user");
+                throw new CustomerAlreadyExistException(existingCustomer.UserId);
             }
 
             // Check if email is already in use
@@ -102,7 +115,7 @@ namespace YourNamespace.Features.Customers
 
             if (emailExists)
             {
-                throw new InvalidOperationException("Email already in use by another customer");
+                throw new EmailAlreadyExistException(request.Email);
             }
 
             // Create new customer
@@ -117,12 +130,15 @@ namespace YourNamespace.Features.Customers
             _dbContext.Customers.Add(customer);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return new CustomerResponseDto(
+            return new CustomerDto(
                 customer.Id,
                 customer.FirstName,
                 customer.LastName,
                 customer.Email,
-                customer.WalletBalance);
+                customer.WalletBalance,
+                customer.UserId,
+                role
+                );
         }
     }
 

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityServer.Pages.Logout;
+namespace OrderManagement.Identities.Pages.Account.Logout;
 
 [SecurityHeaders]
 [AllowAnonymous]

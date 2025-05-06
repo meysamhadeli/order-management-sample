@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer.Pages.ExternalLogin;
+namespace OrderManagement.Identities.Pages.ExternalLogin;
 
 [AllowAnonymous]
 [SecurityHeaders]

@@ -3,12 +3,14 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using OrderManagement.Customers.Dtos;
+using OrderManagement.Customers.Exceptions;
 using OrderManagement.Data;
-using OrderManagement.Identities.Constants;
 
-namespace YourNamespace.Features.Customers
+namespace OrderManagement.Customers.Features
 {
     public class GetCustomerByIdEndpoint : IMinimalEndpoint
     {
@@ -32,22 +34,25 @@ namespace YourNamespace.Features.Customers
         }
     }
 
-    public record GetCustomerByIdQuery(Guid CustomerId) : IRequest<CustomerResponseDto>;
+    public record GetCustomerByIdQuery(Guid CustomerId) : IRequest<CustomerDto>;
 
-    public class GetCustomerByIdHandler : IRequestHandler<GetCustomerByIdQuery, CustomerResponseDto>
+    public class GetCustomerByIdHandler : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
     {
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUserProvider _currentUserProvider;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public GetCustomerByIdHandler(
             AppDbContext dbContext,
-            ICurrentUserProvider currentUserProvider)
+            ICurrentUserProvider currentUserProvider,
+            UserManager<IdentityUser> userManager)
         {
             _dbContext = dbContext;
             _currentUserProvider = currentUserProvider;
+            _userManager = userManager;
         }
 
-        public async Task<CustomerResponseDto> Handle(
+        public async Task<CustomerDto> Handle(
             GetCustomerByIdQuery request,
             CancellationToken cancellationToken)
         {
@@ -57,21 +62,25 @@ namespace YourNamespace.Features.Customers
 
             if (customer is null)
             {
-                throw new KeyNotFoundException("Customer not found");
+                throw new CustomerNotFoundException(request.CustomerId);
             }
 
-            if (!_currentUserProvider.IsAdmin() &&
-                customer.UserId != _currentUserProvider.GetCurrentUserId())
+            if (!_currentUserProvider.IsAdmin() && customer.UserId != _currentUserProvider.GetCurrentUserId())
             {
                 throw new UnauthorizedAccessException("Unauthorized access to customer data");
             }
 
-            return new CustomerResponseDto(
+            var role = await _userManager.GetRolesAsync((await _userManager.FindByIdAsync(customer.UserId))!);
+
+            return new CustomerDto(
                 customer.Id,
                 customer.FirstName,
                 customer.LastName,
                 customer.Email,
-                customer.WalletBalance);
+                customer.WalletBalance,
+                customer.UserId,
+                role?.First() ?? string.Empty
+                );
         }
     }
 

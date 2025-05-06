@@ -3,7 +3,7 @@ using Duende.IdentityServer.Models;
 using IdentityModel;
 using OrderManagement.Identities.Constants;
 
-namespace IdentityServer;
+namespace OrderManagement.Identities.Configurations;
 
 public static class Config
 {

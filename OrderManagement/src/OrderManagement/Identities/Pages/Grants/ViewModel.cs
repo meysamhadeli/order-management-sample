@@ -1,4 +1,4 @@
-namespace IdentityServer.Pages.Grants;
+namespace OrderManagement.Identities.Pages.Grants;
 
 public class ViewModel
 {

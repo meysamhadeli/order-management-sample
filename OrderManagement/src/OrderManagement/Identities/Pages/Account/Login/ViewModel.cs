@@ -1,4 +1,4 @@
-namespace IdentityServer.Pages.Login;
+namespace OrderManagement.Identities.Pages.Account.Login;
 
 public class ViewModel
 {

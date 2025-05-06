@@ -2,10 +2,11 @@ using BuildingBlocks.Exception;
 
 namespace OrderManagement.Customers.Exceptions;
 
-public class CustomerNotFoundException : NotFoundException
+public class CustomerNotFoundException: NotFoundException
 {
-    public CustomerNotFoundException()
-        : base("Customer not found.")
+    public CustomerNotFoundException(Guid customerId) :
+        base($"Customer not found with this customerId {customerId}")
     {
     }
 }
+

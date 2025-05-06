@@ -1,4 +1,4 @@
-namespace IdentityServer.Pages.Ciba;
+namespace OrderManagement.Identities.Pages.Ciba;
 
 public class ViewModel
 {

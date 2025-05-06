@@ -3,7 +3,7 @@ using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityServer.Pages.Ciba;
+namespace OrderManagement.Identities.Pages.Ciba;
 
 [SecurityHeaders]
 [Authorize]

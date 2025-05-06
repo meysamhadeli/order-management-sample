@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using OrderManagement.Customers.Models;
 using OrderManagement.Data;
-using OrderManagement.Orders.Enums;
+using OrderManagement.Orders.Dtos;
+using OrderManagement.Orders.Exceptions;
 using OrderManagement.Orders.Models;
 
-namespace YourNamespace.Features.Orders
+namespace OrderManagement.Orders.Features
 {
     public class CreateOrderEndpoint : IMinimalEndpoint
     {
@@ -40,7 +40,7 @@ namespace YourNamespace.Features.Orders
 
     public record CreateOrderCommand(
         Guid CustomerId,
-        List<OrderItemDto> Items) : IRequest<OrderResponseDto>;
+        List<OrderItemDto> Items) : IRequest<OrderDto>;
 
     public record CreateOrderRequestDto(
         Guid CustomerId,
@@ -51,22 +51,9 @@ namespace YourNamespace.Features.Orders
         decimal UnitPrice,
         int Quantity);
 
-    public record OrderResponseDto(
-        Guid Id,
-        Guid CustomerId,
-        DateTime OrderDate,
-        string Status,
-        decimal TotalAmount,
-        List<OrderItemResponseDto> Items);
 
-    public record OrderItemResponseDto(
-        Guid Id,
-        string Product,
-        decimal UnitPrice,
-        int Quantity,
-        decimal TotalPrice);
 
-    public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderResponseDto>
+    public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderDto>
     {
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUserProvider _currentUserProvider;
@@ -79,7 +66,7 @@ namespace YourNamespace.Features.Orders
             _currentUserProvider = currentUserProvider;
         }
 
-        public async Task<OrderResponseDto> Handle(
+        public async Task<OrderDto> Handle(
             CreateOrderCommand request,
             CancellationToken cancellationToken)
         {
@@ -89,7 +76,7 @@ namespace YourNamespace.Features.Orders
 
             if (customer == null)
             {
-                throw new KeyNotFoundException("Customer not found");
+                throw new CustomerNotFoundException(request.CustomerId);
             }
 
             if (!_currentUserProvider.IsAdmin())
@@ -116,23 +103,7 @@ namespace YourNamespace.Features.Orders
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return MapToResponseDto(order);
-        }
-
-        private static OrderResponseDto MapToResponseDto(Order order)
-        {
-            return new OrderResponseDto(
-                order.Id,
-                order.CustomerId,
-                order.OrderDate,
-                order.Status.ToString(),
-                order.TotalAmount,
-                order.OrderItems.Select(item => new OrderItemResponseDto(
-                    item.Id,
-                    item.Product,
-                    item.UnitPrice,
-                    item.Quantity,
-                    item.TotalPrice)).ToList());
+            return OrderMappings.MapToOrderDto(order);
         }
     }
 

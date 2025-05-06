@@ -1,6 +1,8 @@
 using BuildingBlocks.Core.Model;
-using BuildingBlocks.Exception;
+using OrderManagement.Customers.Models;
 using OrderManagement.Invoices.Enums;
+using OrderManagement.Invoices.Exceptions;
+using OrderManagement.Orders.Enums;
 using OrderManagement.Orders.Models;
 
 namespace OrderManagement.Invoices.Models;
@@ -16,55 +18,50 @@ public record Invoice : Aggregate<Guid>
     // Private constructor for EF Core
     private Invoice() { }
 
-    // Factory method
     public static Invoice Create(
         Guid id,
-        Order order,
+        Guid orderId,
         decimal amount,
         DateTime dueDate)
     {
         if (amount <= 0)
-            throw new DomainException("Invoice amount must be positive");
+            throw new InvalidInvoiceException();
 
-        if (dueDate < DateTime.UtcNow.Date)
-            throw new DomainException("Due date cannot be in the past");
+        if (dueDate <= DateTime.UtcNow)
+            throw new InvalidDueDateException();
 
         return new Invoice
-               {
-                   Id = id,
-                   OrderId = order.Id,
-                   Order = order,
-                   Amount = amount,
-                   DueDate = dueDate,
-                   Status = InvoiceStatus.Pending
-               };
+        {
+            Id = id,
+            OrderId = orderId,
+            Amount = amount,
+            DueDate = dueDate,
+            Status = InvoiceStatus.Pending
+        };
     }
 
-    // Domain behaviors
-    public Invoice MarkAsPaid()
-    {
-        if (Status == InvoiceStatus.Paid)
-            throw new DomainException("Invoice already paid");
-
-        return this with { Status = InvoiceStatus.Paid };
-    }
-
-    public Invoice MarkAsOverdue()
+    public Invoice ProcessPayment(Customer customer)
     {
         if (Status != InvoiceStatus.Pending)
-            throw new DomainException("Only pending invoices can be marked overdue");
+            throw new InvoiceStatusNotAcceptedException(Status);
 
-        if (DueDate >= DateTime.UtcNow.Date)
-            throw new DomainException("Invoice is not yet due");
+        if (customer.WalletBalance < Amount)
+            throw new PaymentException(Amount, customer.WalletBalance);
 
-        return this with { Status = InvoiceStatus.Overdue };
-    }
+        var updatedCustomer = customer with { WalletBalance = customer.WalletBalance - Amount };
 
-    public Invoice Cancel()
-    {
-        if (Status == InvoiceStatus.Paid)
-            throw new DomainException("Paid invoices cannot be cancelled");
+        // Update the Order with the updated Customer and change its status to "Procced"
+        var updatedOrder = Order with
+        {
+            Customer = updatedCustomer,
+            Status = OrderStatus.Procced // Set Order status to "Procced"
+        };
 
-        return this with { Status = InvoiceStatus.Cancelled };
+        // Create a new Invoice with the updated Order and Status
+        return this with
+        {
+            Status = InvoiceStatus.Paid,
+            Order = updatedOrder // Link the updated Order
+        };
     }
 }

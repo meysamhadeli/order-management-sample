@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityServer.Pages.Login;
+namespace OrderManagement.Identities.Pages.Account.Login;
 
 [SecurityHeaders]
 [AllowAnonymous]

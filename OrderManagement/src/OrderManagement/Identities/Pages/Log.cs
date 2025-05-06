@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer.Pages;
+namespace OrderManagement.Identities.Pages;
 
 internal static class Log
 {

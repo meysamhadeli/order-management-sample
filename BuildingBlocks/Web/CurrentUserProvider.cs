@@ -30,10 +30,8 @@ namespace BuildingBlocks.Web
 
         public string[] GetCurrentUserRoles()
         {
-            return _httpContextAccessor?.HttpContext?.User?
-                .FindAll(ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToArray() ?? [];
+            var roles = _httpContextAccessor?.HttpContext?.User.Claims.Where(x=> x.Type == "role")?.Select(c=> c.Value).ToArray();
+            return roles ?? [];
         }
 
         public bool IsAuthenticated()

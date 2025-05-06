@@ -1,4 +1,4 @@
-namespace IdentityServer.Pages.Consent;
+namespace OrderManagement.Identities.Pages.Consent;
 
 public static class ConsentOptions
 {

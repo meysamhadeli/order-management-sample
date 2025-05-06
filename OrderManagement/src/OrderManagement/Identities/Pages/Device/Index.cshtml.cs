@@ -4,13 +4,13 @@ using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Validation;
-using IdentityServer.Pages.Consent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
+using OrderManagement.Identities.Pages.Consent;
 
-namespace IdentityServer.Pages.Device;
+namespace OrderManagement.Identities.Pages.Device;
 
 [SecurityHeaders]
 [Authorize]

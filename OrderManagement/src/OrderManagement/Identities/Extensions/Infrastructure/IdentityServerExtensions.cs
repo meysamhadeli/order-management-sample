@@ -1,5 +1,4 @@
 using BuildingBlocks.Web;
-using IdentityServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

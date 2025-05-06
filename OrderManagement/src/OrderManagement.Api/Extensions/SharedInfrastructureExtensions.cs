@@ -2,7 +2,6 @@ using BuildingBlocks.EfCore;
 using BuildingBlocks.EFCore;
 using BuildingBlocks.Jwt;
 using BuildingBlocks.Logging;
-using BuildingBlocks.Mapster;
 using BuildingBlocks.OpenApi;
 using BuildingBlocks.ProblemDetails;
 using BuildingBlocks.Web;
@@ -40,7 +39,6 @@ public static class SharedInfrastructureExtensions
 
         builder.AddMinimalEndpoints(assemblies: typeof(OrderManagementRoot).Assembly);
         builder.Services.AddValidatorsFromAssembly(typeof(OrderManagementRoot).Assembly);
-        builder.Services.AddCustomMapster(typeof(OrderManagementRoot).Assembly);
 
         builder.AddCustomDbContext<AppDbContext>();
         builder.Services.AddScoped<IDataSeeder, DataSeeder>();

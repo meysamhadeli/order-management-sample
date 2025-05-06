@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Data;
-using OrderManagement.Orders.Models;
+using OrderManagement.Orders.Dtos;
 
-namespace YourNamespace.Features.Orders
+namespace OrderManagement.Orders.Features
 {
     public class GetAllOrdersEndpoint : IMinimalEndpoint
     {
@@ -31,9 +31,9 @@ namespace YourNamespace.Features.Orders
         }
     }
 
-    public record GetAllOrdersQuery : IRequest<List<OrderResponseDto>>;
+    public record GetAllOrdersQuery : IRequest<List<OrderDto>>;
 
-    public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, List<OrderResponseDto>>
+    public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, List<OrderDto>>
     {
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUserProvider _currentUserProvider;
@@ -46,7 +46,7 @@ namespace YourNamespace.Features.Orders
             _currentUserProvider = currentUserProvider;
         }
 
-        public async Task<List<OrderResponseDto>> Handle(
+        public async Task<List<OrderDto>> Handle(
             GetAllOrdersQuery request,
             CancellationToken cancellationToken)
         {
@@ -66,29 +66,13 @@ namespace YourNamespace.Features.Orders
                     .FirstOrDefaultAsync(cancellationToken);
 
                 return mostRecentOrder != null
-                    ? new List<OrderResponseDto> { MapToOrderResponseDto(mostRecentOrder) }
-                    : new List<OrderResponseDto>();
+                    ? new List<OrderDto> { OrderMappings.MapToOrderDto(mostRecentOrder) }
+                    : new List<OrderDto>();
             }
 
             // Admin gets all orders
             var orders = await query.ToListAsync(cancellationToken);
-            return orders.Select(MapToOrderResponseDto).ToList();
-        }
-
-        private static OrderResponseDto MapToOrderResponseDto(Order order)
-        {
-            return new OrderResponseDto(
-                order.Id,
-                order.CustomerId,
-                order.OrderDate,
-                order.Status.ToString(),
-                order.TotalAmount,
-                order.OrderItems.Select(item => new OrderItemResponseDto(
-                    item.Id,
-                    item.Product,
-                    item.UnitPrice,
-                    item.Quantity,
-                    item.TotalPrice)).ToList());
+            return orders.Select(OrderMappings.MapToOrderDto).ToList();
         }
     }
 }

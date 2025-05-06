@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Hosting;
 
-namespace IdentityServer.Pages.Error;
+namespace OrderManagement.Identities.Pages.Home.Error;
 
 [AllowAnonymous]
 [SecurityHeaders]

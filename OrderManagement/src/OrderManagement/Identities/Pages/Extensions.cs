@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityServer.Pages;
+namespace OrderManagement.Identities.Pages;
 
 public static class Extensions
 {

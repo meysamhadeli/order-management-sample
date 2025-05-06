@@ -1,4 +1,4 @@
-namespace IdentityServer.Pages.Device;
+namespace OrderManagement.Identities.Pages.Device;
 
 public class InputModel
 {

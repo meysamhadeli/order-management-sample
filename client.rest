@@ -1,9 +1,7 @@
 @api=https://localhost:5000
-@customer_id = "8c9c0000-97c6-fc34-2eb9-66db322230c9"
 
 ################################# Identity API #################################
 
-###
 # @name Authenticate
 POST {{api}}/connect/token
 Content-Type: application/x-www-form-urlencoded
@@ -11,19 +9,100 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=password
 &client_id=client
 &client_secret=secret
-&username=user
-&password=user@1234
+&username=admin
+&password=admin@1234
 &scope=order-management-api role
 
 
-### Get all customers
-GET https://localhost:5000/api/v1/customers
+### Get All Customers
+GET {{api}}/api/v1/customers
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
-### Get customer by ID
-GET https://localhost:5000/api/v1/customers/{{customer_id}}
+
+### Get Customer By ID
+GET {{api}}/api/v1/customers/0196a6b2-2484-703f-81cf-fff38a0501b4
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+
+### Add Customer
+POST {{api}}/api/v1/customers
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "firstName": "test1",
+  "lastName": "test1",
+  "email": "test1@test.com",
+  "userId": "0196a7d8-6da0-707c-a364-beb0a382e20d",
+  "role": "User",
+  "initialBalance": 80
+}
+
+
+### Add Order
+POST {{api}}/api/v1/orders
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "customerId": "0196a6b2-2484-703f-81cf-fff38a0501b4",
+  "items": [
+    {
+      "product": "biscuit",
+      "unitPrice": 20,
+      "quantity": 2
+    }
+  ]
+}
+
+
+### Get All Orders
+GET {{api}}/api/v1/orders
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+
+### Get order By ID
+GET {{api}}/api/v1/orders/9b6ddc9c-48be-4887-a22b-47f863475a66
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+
+### Generate Invoice
+POST {{api}}/api/v1/invoices/9b6ddc9c-48be-4887-a22b-47f863475a66
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+    "dueDate": "2025-05-07T01:00:00Z"
+}
+
+
+### Get All Invoices
+GET {{api}}/api/v1/invoices
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+
+### Get Invoice by ID
+GET {{api}}/api/v1/invoices/4606af84-30e7-4b95-9085-ba5005d75145
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+
+### Pay Invoice
+POST {{api}}/api/v1/invoices/4606af84-30e7-4b95-9085-ba5005d75145/pay
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}

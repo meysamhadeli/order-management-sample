@@ -1,6 +1,7 @@
 using BuildingBlocks.EfCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OrderManagement.Customers.Models;
 using OrderManagement.Identities.Constants;
 
 namespace OrderManagement.Data.Seed;
@@ -61,6 +62,11 @@ public class DataSeeder: IDataSeeder
                 {
                     await _userManager.AddToRoleAsync(InitialData.Users.First(), IdentityConstant.Role.Admin);
                 }
+
+                var customer = Customer.Create(Guid.CreateVersion7(), "Admin", "Admin", "admin@test.com", InitialData.Users.First(), 100);
+
+                _appDbContext.Customers.Add(customer);
+                await _appDbContext.SaveChangesAsync();
             }
 
             if (await _userManager.FindByNameAsync("user") == null)

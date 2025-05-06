@@ -67,6 +67,16 @@ public static class Extensions
                                 exceptionType.GetType().Name,
                                 context.Response.StatusCode = StatusCodes.Status400BadRequest
                             ),
+                            UnauthorizedException => (
+                                exceptionType.Message,
+                                exceptionType.GetType().Name,
+                                context.Response.StatusCode = StatusCodes.Status401Unauthorized
+                                ),
+                            ForbiddenException => (
+                                exceptionType.Message,
+                                exceptionType.GetType().Name,
+                                context.Response.StatusCode = StatusCodes.Status403Forbidden
+                                ),
                             DomainException => (
                                 exceptionType.Message,
                                 exceptionType.GetType().Name,

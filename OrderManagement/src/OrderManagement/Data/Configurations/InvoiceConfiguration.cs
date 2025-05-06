@@ -11,8 +11,6 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.ToTable(nameof(Invoice));
 
         builder.HasKey(i => i.Id);
-        builder.Property(i => i.Id)
-            .ValueGeneratedNever();
 
         builder.Property(i => i.OrderId)
             .IsRequired();
@@ -32,10 +30,6 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .WithMany()
             .HasForeignKey(i => i.OrderId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Property(i => i.Version)
-            .IsRowVersion()
-            .IsRequired();
     }
 }
 

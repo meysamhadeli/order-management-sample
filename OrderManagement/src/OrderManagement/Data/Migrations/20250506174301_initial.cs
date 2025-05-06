@@ -172,7 +172,7 @@ namespace OrderManagement.Data.Migrations
                     last_modified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     last_modified_by = table.Column<string>(type: "text", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    version = table.Column<long>(type: "bigint", rowVersion: true, nullable: false)
+                    version = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -182,7 +182,7 @@ namespace OrderManagement.Data.Migrations
                         column: x => x.user_id,
                         principalTable: "asp_net_users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,7 +191,6 @@ namespace OrderManagement.Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     customer_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    customer_id1 = table.Column<Guid>(type: "uuid", nullable: true),
                     order_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -199,7 +198,7 @@ namespace OrderManagement.Data.Migrations
                     last_modified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     last_modified_by = table.Column<string>(type: "text", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    version = table.Column<long>(type: "bigint", rowVersion: true, nullable: false)
+                    version = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -209,12 +208,7 @@ namespace OrderManagement.Data.Migrations
                         column: x => x.customer_id,
                         principalTable: "customer",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "fk_order_customer_customer_id1",
-                        column: x => x.customer_id1,
-                        principalTable: "customer",
-                        principalColumn: "id");
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,7 +225,7 @@ namespace OrderManagement.Data.Migrations
                     last_modified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     last_modified_by = table.Column<string>(type: "text", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    version = table.Column<long>(type: "bigint", rowVersion: true, nullable: false)
+                    version = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -323,11 +317,6 @@ namespace OrderManagement.Data.Migrations
                 name: "IX_order_customer_id",
                 table: "order",
                 column: "customer_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_order_customer_id1",
-                table: "order",
-                column: "customer_id1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_order_item_order_id",

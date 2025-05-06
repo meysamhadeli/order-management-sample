@@ -12,8 +12,6 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         // Primary Key
         builder.HasKey(c => c.Id);
-        builder.Property(c => c.Id)
-            .ValueGeneratedNever();
 
         // Properties
         builder.Property(c => c.FirstName)
@@ -38,16 +36,10 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.HasOne(c => c.User)
             .WithMany()
             .HasForeignKey(c => c.UserId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .IsRequired();
 
         // Indexes
         builder.HasIndex(c => c.UserId).IsUnique();
         builder.HasIndex(c => c.Email).IsUnique();
-
-        // Optimistic concurrency
-        builder.Property(c => c.Version)
-            .IsRowVersion()
-            .IsRequired();
     }
 }

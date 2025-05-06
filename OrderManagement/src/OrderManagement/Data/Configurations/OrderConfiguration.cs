@@ -28,10 +28,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Ignore(o => o.TotalAmount);
 
         // Customer relationship (reference to external aggregate)
-        builder.HasOne<Customer>()
+        builder.HasOne(o => o.Customer)  // Explicitly use the navigation property
             .WithMany()
             .HasForeignKey(o => o.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .IsRequired();
 
         // OrderItems owned collection configuration
         builder.OwnsMany(o => o.OrderItems, oi =>
@@ -56,11 +56,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             // Indexes
             oi.HasIndex(oi => oi.Product);
         });
-
-        // Optimistic concurrency
-        builder.Property(o => o.Version)
-            .IsRowVersion()
-            .IsRequired();
     }
 }
 

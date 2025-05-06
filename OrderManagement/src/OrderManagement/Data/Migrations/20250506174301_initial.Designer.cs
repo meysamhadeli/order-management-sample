@@ -12,7 +12,7 @@ using OrderManagement.Data;
 namespace OrderManagement.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250506123733_initial")]
+    [Migration("20250506174301_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -268,6 +268,7 @@ namespace OrderManagement.Data.Migrations
             modelBuilder.Entity("OrderManagement.Customers.Models.Customer", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -314,9 +315,7 @@ namespace OrderManagement.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
+                    b.Property<long?>("Version")
                         .HasColumnType("bigint")
                         .HasColumnName("version");
 
@@ -339,6 +338,7 @@ namespace OrderManagement.Data.Migrations
             modelBuilder.Entity("OrderManagement.Invoices.Models.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -380,9 +380,7 @@ namespace OrderManagement.Data.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("status");
 
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
+                    b.Property<long?>("Version")
                         .HasColumnType("bigint")
                         .HasColumnName("version");
 
@@ -413,10 +411,6 @@ namespace OrderManagement.Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("customer_id");
 
-                    b.Property<Guid?>("CustomerId1")
-                        .HasColumnType("uuid")
-                        .HasColumnName("customer_id1");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
@@ -439,9 +433,7 @@ namespace OrderManagement.Data.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("status");
 
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
+                    b.Property<long?>("Version")
                         .HasColumnType("bigint")
                         .HasColumnName("version");
 
@@ -449,8 +441,6 @@ namespace OrderManagement.Data.Migrations
                         .HasName("pk_order");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("CustomerId1");
 
                     b.ToTable("order", (string)null);
                 });
@@ -517,7 +507,7 @@ namespace OrderManagement.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_customer_asp_net_users_user_id");
 
@@ -538,17 +528,12 @@ namespace OrderManagement.Data.Migrations
 
             modelBuilder.Entity("OrderManagement.Orders.Models.Order", b =>
                 {
-                    b.HasOne("OrderManagement.Customers.Models.Customer", null)
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_order_customer_customer_id");
-
                     b.HasOne("OrderManagement.Customers.Models.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId1")
-                        .HasConstraintName("fk_order_customer_customer_id1");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_order_customer_customer_id");
 
                     b.OwnsMany("OrderManagement.Orders.Models.OrderItem", "OrderItems", b1 =>
                         {

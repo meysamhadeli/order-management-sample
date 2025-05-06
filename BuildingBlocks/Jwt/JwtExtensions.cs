@@ -1,6 +1,7 @@
 using BuildingBlocks.Web;
 using Duende.IdentityServer.EntityFramework.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using OrderManagement.Identities.Constants;
@@ -40,33 +41,36 @@ namespace BuildingBlocks.Jwt
             });
 
 
-            services.AddAuthorization(options =>
-                    {
-                        options.AddPolicy(nameof(ApiScope), policy =>
-                    {
-                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireClaim("scope", jwtOptions.Audience);
-                    });
+            services.AddAuthorization(
+                options =>
+                {
+                    options.AddPolicy(
+                        nameof(ApiScope),
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.RequireClaim("scope", jwtOptions.Audience);
+                        });
 
-                        // Role-based policies
-                        options.AddPolicy(
-                            IdentityConstant.Role.Admin,
-                            x =>
-                            {
-                                x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                                x.RequireRole(IdentityConstant.Role.Admin);
-                            }
-                        );
-                        options.AddPolicy(
-                            IdentityConstant.Role.User,
-                            x =>
-                            {
-                                x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                                x.RequireRole(IdentityConstant.Role.User);
-                            }
-                        );
-                    });
+                    // Role-based policies
+                    options.AddPolicy(
+                        IdentityConstant.Role.Admin,
+                        x =>
+                        {
+                            x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            x.RequireRole(IdentityConstant.Role.Admin);
+                        }
+                    );
+                    options.AddPolicy(
+                        IdentityConstant.Role.User,
+                        x =>
+                        {
+                            x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            x.RequireRole(IdentityConstant.Role.User);
+                        }
+                    );
+                });
 
             return services;
         }

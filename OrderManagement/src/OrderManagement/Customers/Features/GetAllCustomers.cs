@@ -20,7 +20,7 @@ namespace YourNamespace.Features.Customers
                     var result = await mediator.Send(new GetAllCustomersQuery());
                     return Results.Ok(result);
                 })
-                .RequireAuthorization(policy => policy.RequireRole(IdentityConstant.Role.Admin))
+                .RequireAuthorization()
                 .WithApiVersionSet(builder.NewApiVersionSet("Customer").Build())
                 .WithTags("Customer")
                 .WithName("GetAllCustomers")

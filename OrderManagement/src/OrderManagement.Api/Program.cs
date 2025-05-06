@@ -10,4 +10,7 @@ var app = builder.Build();
 app.UserSharedInfrastructure();
 app.MapMinimalEndpoints();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.Run();

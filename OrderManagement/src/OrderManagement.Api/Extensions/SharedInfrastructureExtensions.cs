@@ -88,19 +88,9 @@ public static class SharedInfrastructureExtensions
 
         app.UseIdentityServer();
 
-   // Correct middleware ordering
-    app.UseRouting();
-    app.UseAuthentication();
-    app.UseAuthorization();
 
-    app.MapRazorPages()
-        .RequireAuthorization();
-
-    app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-    });
-
+        app.MapRazorPages()
+            .RequireAuthorization();
 
         return app;
     }

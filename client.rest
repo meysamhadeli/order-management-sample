@@ -1,0 +1,29 @@
+@api=https://localhost:5000
+@customer_id = "8c9c0000-97c6-fc34-2eb9-66db322230c9"
+
+################################# Identity API #################################
+
+###
+# @name Authenticate
+POST {{api}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&client_id=client
+&client_secret=secret
+&username=user
+&password=user@1234
+&scope=order-management-api role
+
+
+### Get all customers
+GET https://localhost:5000/api/v1/customers
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+### Get customer by ID
+GET https://localhost:5000/api/v1/customers/{{customer_id}}
+Accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}

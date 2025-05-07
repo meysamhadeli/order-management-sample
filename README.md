@@ -1,7 +1,7 @@
 # 🛒 order-management-sample
 
 
-> 🚀 **A practical and imaginary Monolith system for implementing an infrastructure for up and running Modular system with the latest technology and architecture like Vertical Slice Architecture, CQRS, DDD in .Net 9.**
+> 🚀 **A practical Monolith system for implementing an infrastructure for up and running Modular system with the latest technology and architecture like Vertical Slice Architecture, CQRS, DDD in .Net 9.**
 
 
 # Table of Contents

@@ -14,8 +14,6 @@
   - [Run](#run)
   - [Test](#test)
 - [Documentation Apis](#documentation-apis)
-- [Support](#support)
-- [Contribution](#contribution)
 
 ## The Goals of This Project
 
@@ -99,14 +97,6 @@ dotnet test
 This project provides `API documentation` and navigate to `/swagger` for `Swagger OpenAPI` or `/scalar/v1` for `Scalar OpenAPI` to visit list of endpoints.
 
 As part of API testing, I created the [client.rest](./client.rest) file which can be run with the [REST Client](https://github.com/Huachao/vscode-restclient) `VSCode plugin`.
-
-# Support
-
-If you like my work, feel free to:
-
-- ⭐ this repository. And we will be happy together :)
-
-Thanks a bunch for supporting me!
 
 ## License
 This project is made available under the MIT license. See [LICENSE](https://github.com/meysamhadeli/order-management-sample/blob/main/LICENSE) for details.

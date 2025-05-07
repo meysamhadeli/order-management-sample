@@ -137,8 +137,7 @@ namespace OrderManagement.Customers.Features
                 user,
                 request.InitialBalance);
 
-            _dbContext.Customers.Add(customer);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.Customers.AddAsync(customer, cancellationToken);
 
             return new CustomerDto(
                 customer.Id,

@@ -83,9 +83,8 @@ public class GenerateInvoiceHandler : IRequestHandler<GenerateInvoiceCommand, In
             amount: order.TotalAmount,
             dueDate: command.DueDate);
 
-        // Save invoice
+        // Add invoice
         await _context.Invoices.AddAsync(invoice, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
 
         return InvoiceMappings.MapToInvoiceDto(invoice);
     }

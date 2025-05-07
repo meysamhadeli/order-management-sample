@@ -68,8 +68,6 @@ namespace OrderManagement.Features.Invoices
                 CancellationToken cancellationToken
             )
             {
-                await _appDbContext.BeginTransactionAsync(cancellationToken);
-
                 var invoice = await _appDbContext.Invoices
                                   .Include(i => i.Order)
                                   .ThenInclude(o => o.Customer)
@@ -104,8 +102,6 @@ namespace OrderManagement.Features.Invoices
                 _appDbContext.Customers.Update(proccedInvoice.Order.Customer); // No conflict here now
 
                 _appDbContext.Orders.Update(proccedInvoice.Order); // No conflict here now
-
-                await _appDbContext.CommitTransactionAsync(cancellationToken);
 
                 return InvoiceMappings.MapToInvoiceDto(proccedInvoice);
             }

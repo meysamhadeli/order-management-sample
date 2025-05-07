@@ -105,8 +105,7 @@ namespace OrderManagement.Orders.Features
                 request.CustomerId,
                 orderItems);
 
-            _dbContext.Orders.Add(order);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.Orders.AddAsync(order, cancellationToken);
 
             return OrderMappings.MapToOrderDto(order);
         }

@@ -1,8 +1,10 @@
 using BuildingBlocks.Core.Model;
 using BuildingBlocks.Exception;
 using OrderManagement.Customers.Models;
+using OrderManagement.Orders.Dtos;
 using OrderManagement.Orders.Enums;
 using OrderManagement.Orders.Exceptions;
+using OrderManagement.Orders.Features;
 
 namespace OrderManagement.Orders.Models;
 
@@ -30,7 +32,7 @@ public record Order : Aggregate<Guid>
     {
         if (!items.Any()) throw new InvalidOrderItemException();
 
-        return new Order
+        var order = new Order
         {
             Id = id,
             CustomerId = customerId,
@@ -39,5 +41,16 @@ public record Order : Aggregate<Guid>
                        .AsReadOnly(),
             Status = OrderStatus.Pending
         };
+
+        order.AddDomainEvent(new OrderCreatedDomainEvent(
+            order.Id,
+            order.CustomerId,
+            order.OrderDate,
+            order.Status,
+            order.TotalAmount,
+            order.IsDeleted,
+            order.OrderItems.Select(i => new OrderItemDto(i.Id, i.Product, i.UnitPrice, i.Quantity, i.TotalPrice)).ToList()));
+
+        return order;
     }
 }

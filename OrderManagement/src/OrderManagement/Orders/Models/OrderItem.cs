@@ -1,5 +1,6 @@
 using BuildingBlocks.Exception;
 using OrderManagement.Orders.Exceptions;
+using OrderManagement.Orders.Features;
 
 namespace OrderManagement.Orders.Models;
 
@@ -27,7 +28,7 @@ public record OrderItem
         if (unitPrice <= 0)
             throw new invalidUnitPriceException();
 
-        return new OrderItem
+        var orderItem =  new OrderItem
                {
                    Id = id,
                    OrderId = orderId,
@@ -35,5 +36,7 @@ public record OrderItem
                    UnitPrice = unitPrice,
                    Quantity = quantity
                };
+
+        return orderItem;
     }
 }

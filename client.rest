@@ -22,7 +22,7 @@ authorization: bearer {{Authenticate.response.body.access_token}}
 
 
 ### Get Customer By ID
-GET {{api}}/api/v1/customers/0196a6b2-2484-703f-81cf-fff38a0501b4
+GET {{api}}/api/v1/customers/0196aabc-eeff-7d71-bf42-e9c25f58ed8d
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
@@ -38,7 +38,7 @@ authorization: bearer {{Authenticate.response.body.access_token}}
   "firstName": "test1",
   "lastName": "test1",
   "email": "test1@test.com",
-  "userId": "0196a7d8-6da0-707c-a364-beb0a382e20d",
+  "userId": "0196aabc-ee26-7bd7-a870-cc761ad67fca",
   "role": "User",
   "initialBalance": 80
 }
@@ -51,7 +51,7 @@ Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
 {
-  "customerId": "0196a6b2-2484-703f-81cf-fff38a0501b4",
+  "customerId": "6b7a5de2-a1fa-4b76-9751-be9e455a7518",
   "items": [
     {
       "product": "biscuit",
@@ -70,20 +70,20 @@ authorization: bearer {{Authenticate.response.body.access_token}}
 
 
 ### Get order By ID
-GET {{api}}/api/v1/orders/9b6ddc9c-48be-4887-a22b-47f863475a66
+GET {{api}}/api/v1/orders/b6a970eb-ecfe-466c-8d18-0a8ba211e0ee
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
 
 ### Generate Invoice
-POST {{api}}/api/v1/invoices/9b6ddc9c-48be-4887-a22b-47f863475a66
+POST {{api}}/api/v1/invoices/b6a970eb-ecfe-466c-8d18-0a8ba211e0ee
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
 {
-    "dueDate": "2025-05-07T01:00:00Z"
+    "dueDate": "2025-05-07T18:00:00Z"
 }
 
 
@@ -95,14 +95,14 @@ authorization: bearer {{Authenticate.response.body.access_token}}
 
 
 ### Get Invoice by ID
-GET {{api}}/api/v1/invoices/4606af84-30e7-4b95-9085-ba5005d75145
+GET {{api}}/api/v1/invoices/713cc18b-124e-4e48-8836-215e436f4436
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
 
 ### Pay Invoice
-POST {{api}}/api/v1/invoices/4606af84-30e7-4b95-9085-ba5005d75145/pay
+POST {{api}}/api/v1/invoices/713cc18b-124e-4e48-8836-215e436f4436/pay
 Accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}

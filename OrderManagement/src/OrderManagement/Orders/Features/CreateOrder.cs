@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Event;
 using BuildingBlocks.Exception;
 using BuildingBlocks.Web;
 using FluentValidation;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Data;
 using OrderManagement.Orders.Dtos;
+using OrderManagement.Orders.Enums;
 using OrderManagement.Orders.Exceptions;
 using OrderManagement.Orders.Models;
 
@@ -46,11 +48,14 @@ namespace OrderManagement.Orders.Features
         Guid CustomerId,
         List<OrderItemDto> Items);
 
-    public record OrderItemDto(
-        string Product,
-        decimal UnitPrice,
-        int Quantity);
-
+    public record OrderCreatedDomainEvent(
+        Guid OrderId,
+        Guid CustomerId,
+        DateTime OrderDate,
+        OrderStatus Status,
+        decimal TotalAmount,
+        bool IsDeleted,
+        List<OrderItemDto> OrderItems) : IDomainEvent;
 
 
     public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderDto>

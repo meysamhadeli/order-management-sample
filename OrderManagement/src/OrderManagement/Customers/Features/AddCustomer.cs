@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Event;
 using BuildingBlocks.Exception;
 using BuildingBlocks.Web;
 using FluentValidation;
@@ -62,6 +63,15 @@ namespace OrderManagement.Customers.Features
         Role role = Role.User,
         decimal InitialBalance = 0
         );
+
+    public record CustomerCreatedDomainEvent(
+        Guid CustomerId,
+        string FirstName,
+        string LastName,
+        string Email,
+        string UserId,
+        decimal InitialBalance,
+        bool IsDeleted) : IDomainEvent;
 
     public class AddCustomerHandler : IRequestHandler<AddCustomerCommand, CustomerDto>
     {

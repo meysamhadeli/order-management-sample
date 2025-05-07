@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Event;
 using OrderManagement.Data;
 using OrderManagement.Invoices.Dtos;
 using BuildingBlocks.Exception;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Invoices;
+using OrderManagement.Invoices.Enums;
 using OrderManagement.Invoices.Exceptions;
 
 namespace OrderManagement.Features.Invoices
@@ -38,6 +40,14 @@ namespace OrderManagement.Features.Invoices
         }
 
         public record PayInvoiceCommand(Guid InvoiceId) : IRequest<InvoiceDto>;
+
+        public record InvoicePaidDomainEvent(
+            Guid InvoiceId,
+            Guid OrderId,
+            decimal AmountPaid,
+            decimal CustomerNewBalance,
+            InvoiceStatus NewStatus,
+            bool IsDeleted) : IDomainEvent;
 
         public class PayInvoiceHandler : IRequestHandler<PayInvoiceCommand, InvoiceDto>
         {

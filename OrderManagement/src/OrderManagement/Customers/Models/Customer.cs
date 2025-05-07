@@ -2,6 +2,7 @@ using BuildingBlocks.Core.Model;
 using BuildingBlocks.Exception;
 using Microsoft.AspNetCore.Identity;
 using OrderManagement.Customers.Exceptions;
+using OrderManagement.Customers.Features;
 
 namespace OrderManagement.Customers.Models;
 
@@ -29,7 +30,7 @@ public record Customer : Aggregate<Guid>
         if (initialBalance < 0)
             throw new InvalidBalanceException();
 
-        return new Customer
+        var customer =  new Customer
         {
             Id = id,
             FirstName = firstName,
@@ -39,5 +40,17 @@ public record Customer : Aggregate<Guid>
             User = user,
             WalletBalance = initialBalance
         };
+
+        // Raise domain event
+        customer.AddDomainEvent(new CustomerCreatedDomainEvent(
+            customer.Id,
+            customer.FirstName,
+            customer.LastName,
+            customer.Email,
+            customer.UserId,
+            customer.WalletBalance,
+            customer.IsDeleted));
+
+        return customer;
     }
 }

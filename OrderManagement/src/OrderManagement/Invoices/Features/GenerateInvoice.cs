@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Event;
 using BuildingBlocks.Web;
 using FluentValidation;
 using MediatR;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Data;
 using OrderManagement.Invoices.Dtos;
+using OrderManagement.Invoices.Enums;
 using OrderManagement.Invoices.Exceptions;
 using OrderManagement.Invoices.Models;
 using OrderManagement.Orders.Models;
@@ -48,6 +50,14 @@ public record GenerateInvoiceCommand(
 public record GenerateInvoiceRequestDto(
     DateTime DueDate
 );
+
+public record InvoiceGeneratedDomainEvent(
+    Guid InvoiceId,
+    Guid OrderId,
+    decimal Amount,
+    DateTime DueDate,
+    InvoiceStatus Status,
+    bool IsDeleted) : IDomainEvent;
 
 public class GenerateInvoiceHandler : IRequestHandler<GenerateInvoiceCommand, InvoiceDto>
 {

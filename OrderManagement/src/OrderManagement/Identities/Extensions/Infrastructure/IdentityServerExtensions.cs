@@ -1,11 +1,12 @@
 using BuildingBlocks.Web;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrderManagement.Data;
 using OrderManagement.Identities.Configurations;
 
-namespace OrderManagement.Identities.Extensions.Infrastructure;
+namespace OrderManagement.Identities;
 
 public static class IdentityServerExtensions
 {
@@ -42,6 +43,28 @@ public static class IdentityServerExtensions
         //ref: https://documentation.openiddict.com/configuration/encryption-and-signing-credentials.html
         identityServerBuilder.AddDeveloperSigningCredential();
 
+        builder.Services.ConfigureApplicationCookie(options =>
+                                                    {
+                                                        options.Events.OnRedirectToLogin = context =>
+                                                        {
+                                                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                                            return Task.CompletedTask;
+                                                        };
+
+                                                        options.Events.OnRedirectToAccessDenied = context =>
+                                                        {
+                                                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                                                            return Task.CompletedTask;
+                                                        };
+                                                    });
+
         return builder;
     }
+
+    private static bool IsApiRequest(HttpRequest request)
+    {
+        return request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase) ||
+               request.Headers["Accept"].Any(h => h.Contains("application/json", StringComparison.OrdinalIgnoreCase));
+    }
+
 }

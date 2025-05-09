@@ -2,12 +2,10 @@ using BuildingBlocks.Web;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Customers.Dtos;
 using OrderManagement.Data;
-
 
 public class GetAllCustomersEndpoint : IMinimalEndpoint
 {
@@ -37,17 +35,14 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, List
 {
     private readonly AppDbContext _dbContext;
     private readonly ICurrentUserProvider _currentUserProvider;
-    private readonly UserManager<IdentityUser> _userManager;
 
     public GetAllCustomersHandler(
         AppDbContext dbContext,
-        ICurrentUserProvider currentUserProvider,
-        UserManager<IdentityUser> userManager
+        ICurrentUserProvider currentUserProvider
     )
     {
         _dbContext = dbContext;
         _currentUserProvider = currentUserProvider;
-        _userManager = userManager;
     }
 
     public async Task<List<CustomerDto>> Handle(
@@ -62,16 +57,11 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, List
             query = query.Where(c => c.UserId == _currentUserProvider.GetCurrentUserId());
         }
 
-        // Get the list of customers from the database
         var customers = await query.ToListAsync(cancellationToken);
-
-        // Get the user IDs of the customers we fetched
         var userIds = customers.Select(c => c.UserId).ToList();
 
-        // Fetch the roles for all users concurrently
         var roles = await GetRolesForUsers(userIds, cancellationToken);
 
-        // Map the customer information with the roles
         var customerDtos = customers.Select(c => new CustomerDto(
                                                 c.Id,
                                                 c.FirstName,
@@ -92,17 +82,18 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, List
         CancellationToken cancellationToken
     )
     {
-        // Create a list of tasks to fetch roles for each user
-        var roleTasks = userIds
-            .Select(userId => _userManager.GetRolesAsync(new IdentityUser {Id = userId}))
-            .ToList();
+        var roles = await (
+                              from userRole in _dbContext.UserRoles
+                              join role in _dbContext.Roles on userRole.RoleId equals role.Id
+                              where userIds.Contains(userRole.UserId)
+                              select new {userRole.UserId, role.Name}
+                          ).ToListAsync(cancellationToken);
 
-        // Run all tasks concurrently
-        var roleResults = await Task.WhenAll(roleTasks);
-
-        // Map the results to a dictionary (UserId -> List of Roles)
-        var rolesDict = userIds.Zip(roleResults, (userId, roles) => new {userId, roles})
-            .ToDictionary(x => x.userId, x => x.roles.ToList());
+        var rolesDict = roles
+            .GroupBy(x => x.UserId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(x => x.Name).ToList());
 
         return rolesDict;
     }

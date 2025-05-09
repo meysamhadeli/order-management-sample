@@ -8,4 +8,55 @@
     <ProjectReference Include="..\OrderManagement\OrderManagement.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\site.css" />
+    <None Include="wwwroot\css\site.min.css" />
+    <None Include="wwwroot\css\site.scss" />
+    <None Include="wwwroot\duende-logo.svg" />
+    <None Include="wwwroot\favicon.ico" />
+    <None Include="wwwroot\js\signin-redirect.js" />
+    <None Include="wwwroot\js\signout-redirect.js" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\css\bootstrap-glyphicons.css" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\css\bootstrap-glyphicons.min.css" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\fonts\glyphicons\glyphicons-halflings-regular.eot" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\fonts\glyphicons\glyphicons-halflings-regular.svg" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\fonts\glyphicons\glyphicons-halflings-regular.ttf" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\fonts\glyphicons\glyphicons-halflings-regular.woff" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\fonts\glyphicons\glyphicons-halflings-regular.woff2" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\LICENSE" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\maps\glyphicons-fontawesome.css" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\maps\glyphicons-fontawesome.less" />
+    <None Include="wwwroot\lib\bootstrap4-glyphicons\maps\glyphicons-fontawesome.min.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.css.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css" />
+    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.js" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.js.map" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js" />
+    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map" />
+    <None Include="wwwroot\lib\bootstrap\LICENSE" />
+    <None Include="wwwroot\lib\bootstrap\README.md" />
+    <None Include="wwwroot\lib\jquery\dist\jquery.js" />
+    <None Include="wwwroot\lib\jquery\dist\jquery.min.js" />
+    <None Include="wwwroot\lib\jquery\dist\jquery.min.map" />
+    <None Include="wwwroot\lib\jquery\dist\jquery.slim.js" />
+    <None Include="wwwroot\lib\jquery\dist\jquery.slim.min.js" />
+    <None Include="wwwroot\lib\jquery\dist\jquery.slim.min.map" />
+    <None Include="wwwroot\lib\jquery\LICENSE.txt" />
+    <None Include="wwwroot\lib\jquery\README.md" />
+  </ItemGroup>
+
 </Project>

@@ -3,7 +3,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Customers.Dtos;
@@ -40,16 +39,13 @@ namespace OrderManagement.Customers.Features
     {
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUserProvider _currentUserProvider;
-        private readonly UserManager<IdentityUser> _userManager;
 
         public GetCustomerByIdHandler(
             AppDbContext dbContext,
-            ICurrentUserProvider currentUserProvider,
-            UserManager<IdentityUser> userManager)
+            ICurrentUserProvider currentUserProvider)
         {
             _dbContext = dbContext;
             _currentUserProvider = currentUserProvider;
-            _userManager = userManager;
         }
 
         public async Task<CustomerDto> Handle(
@@ -65,12 +61,19 @@ namespace OrderManagement.Customers.Features
                 throw new CustomerNotFoundException(request.CustomerId);
             }
 
-            if (!_currentUserProvider.IsAdmin() && customer.UserId != _currentUserProvider.GetCurrentUserId())
+            if (!_currentUserProvider.IsAdmin() &&
+                customer.UserId != _currentUserProvider.GetCurrentUserId())
             {
                 throw new UnauthorizedAccessException("Unauthorized access to customer data");
             }
 
-            var role = await _userManager.GetRolesAsync((await _userManager.FindByIdAsync(customer.UserId))!);
+            // Get role directly from Identity tables
+            var roleName = await (
+                from ur in _dbContext.UserRoles
+                join r in _dbContext.Roles on ur.RoleId equals r.Id
+                where ur.UserId == customer.UserId
+                select r.Name
+            ).FirstOrDefaultAsync(cancellationToken);
 
             return new CustomerDto(
                 customer.Id,
@@ -79,8 +82,7 @@ namespace OrderManagement.Customers.Features
                 customer.Email,
                 customer.WalletBalance,
                 customer.UserId,
-                role?.First() ?? string.Empty
-                );
+                roleName ?? string.Empty);
         }
     }
 

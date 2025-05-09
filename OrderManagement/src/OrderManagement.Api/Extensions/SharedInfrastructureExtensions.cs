@@ -10,9 +10,10 @@ using FluentValidation;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement;
+using OrderManagement.Api.Extensions;
 using OrderManagement.Data;
 using OrderManagement.Data.Seed;
-using OrderManagement.Identities.Extensions.Infrastructure;
+using OrderManagement.Identities;
 using Serilog;
 
 namespace Api.Extensions;
@@ -86,9 +87,13 @@ public static class SharedInfrastructureExtensions
 
         app.UseIdentityServer();
 
-
         app.MapRazorPages()
             .RequireAuthorization();
+
+        app.MapMinimalEndpoints();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         return app;
     }

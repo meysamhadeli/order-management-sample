@@ -3,7 +3,7 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Validation;
 using MediatR;
 
-namespace Api.Extensions;
+namespace OrderManagement.Api.Extensions;
 
 public static class MediatRExtensions
 {

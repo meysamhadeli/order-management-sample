@@ -14,6 +14,7 @@ using OrderManagement.Customers.Exceptions;
 using OrderManagement.Customers.Models;
 using OrderManagement.Data;
 using OrderManagement.Identities.Constants;
+using System.Globalization;
 
 namespace OrderManagement.Customers.Features
 {
@@ -22,19 +23,22 @@ namespace OrderManagement.Customers.Features
         public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
         {
             builder.MapPost(
-                $"{EndpointConfig.BaseApiPath}/customers",
-                async (AddCustomerRequestDto request, IMediator mediator) =>
-                {
-                    var result = await mediator.Send(new AddCustomerCommand(
-                        request.FirstName,
-                        request.LastName,
-                        request.Email,
-                        request.UserId,
-                        request.role,
-                        request.InitialBalance));
+                    $"{EndpointConfig.BaseApiPath}/customers",
+                    async (AddCustomerRequestDto request, IMediator mediator) =>
+                    {
+                        var result = await mediator.Send(
+                                         new AddCustomerCommand(
+                                             request.FirstName,
+                                             request.LastName,
+                                             request.Email,
+                                             request.UserId,
+                                             request.role,
+                                             request.InitialBalance));
 
-                    return Results.Created($"{EndpointConfig.BaseApiPath}/customers/{result.Id}", result);
-                })
+                        return Results.Created(
+                            $"{EndpointConfig.BaseApiPath}/customers/{result.Id}",
+                            result);
+                    })
                 .RequireAuthorization(policy => policy.RequireRole(IdentityConstant.Role.Admin))
                 .WithApiVersionSet(builder.NewApiVersionSet("Customer").Build())
                 .WithTags("Customer")
@@ -53,7 +57,7 @@ namespace OrderManagement.Customers.Features
         string UserId,
         Role role,
         decimal InitialBalance = 0
-        ) : IRequest<CustomerDto>;
+    ) : IRequest<CustomerDto>;
 
     public record AddCustomerRequestDto(
         string FirstName,
@@ -62,7 +66,7 @@ namespace OrderManagement.Customers.Features
         string UserId,
         Role role = Role.User,
         decimal InitialBalance = 0
-        );
+    );
 
     public record CustomerCreatedDomainEvent(
         Guid CustomerId,
@@ -71,55 +75,76 @@ namespace OrderManagement.Customers.Features
         string Email,
         string UserId,
         decimal InitialBalance,
-        bool IsDeleted) : IDomainEvent;
+        bool IsDeleted
+    ) : IDomainEvent;
 
     public class AddCustomerHandler : IRequestHandler<AddCustomerCommand, CustomerDto>
     {
         private readonly AppDbContext _dbContext;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly ICurrentUserProvider _currentUserProvider;
 
         public AddCustomerHandler(
             AppDbContext dbContext,
-            UserManager<IdentityUser> userManager,
-            ICurrentUserProvider currentUserProvider)
+            ICurrentUserProvider currentUserProvider
+        )
         {
             _dbContext = dbContext;
-            _userManager = userManager;
-            _currentUserProvider = currentUserProvider;
         }
 
         public async Task<CustomerDto> Handle(
             AddCustomerCommand request,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
-            if (!_currentUserProvider.IsAdmin())
-            {
-                throw new ForbiddenException("Unauthorized to create order for this customer");
-            }
-
-            // Check if user exists
-            var user = await _userManager.FindByIdAsync(request.UserId);
+            // Fetch user from database
+            var user = await _dbContext.Users
+                           .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 
             if (user == null)
             {
                 throw new UserNotFoundException(request.UserId);
             }
 
-            var role = request.role.ToString().ToLower(System.Globalization.CultureInfo.CurrentCulture);
+            // Assign role directly via UserRoles table if not already assigned
+            var roleName = request.role.ToString().ToLower(CultureInfo.CurrentCulture);
 
-            await _userManager.AddToRoleAsync(user, role);;
+            var role = await _dbContext.Roles
+                           .FirstOrDefaultAsync(
+                               r => r.NormalizedName == roleName.ToUpper(CultureInfo.InvariantCulture),
+                               cancellationToken);
 
-            // Check if customer already exists for this user
+            if (role == null)
+            {
+                throw new DomainException($"Role '{roleName}' not found.");
+            }
+
+            var roleAlreadyAssigned = await _dbContext.UserRoles
+                                          .AnyAsync(
+                                              ur => ur.UserId == request.UserId &&
+                                                    ur.RoleId == role.Id,
+                                              cancellationToken);
+
+            if (!roleAlreadyAssigned)
+            {
+                _dbContext.UserRoles.Add(
+                    new IdentityUserRole<string>
+                    {
+                        UserId = request.UserId,
+                        RoleId = role.Id
+                    });
+            }
+
+            // Check if customer already exists
             var existingCustomer = await _dbContext.Customers
-                                       .FirstOrDefaultAsync(c => c.UserId == request.UserId, cancellationToken);
+                                       .FirstOrDefaultAsync(
+                                           c => c.UserId == request.UserId,
+                                           cancellationToken);
 
             if (existingCustomer != null)
             {
                 throw new CustomerAlreadyExistException(existingCustomer.UserId);
             }
 
-            // Check if email is already in use
+            // Check if email already exists
             var emailExists = await _dbContext.Customers
                                   .AnyAsync(c => c.Email == request.Email, cancellationToken);
 
@@ -128,7 +153,6 @@ namespace OrderManagement.Customers.Features
                 throw new EmailAlreadyExistException(request.Email);
             }
 
-            // Create new customer
             var customer = Customer.Create(
                 Guid.NewGuid(),
                 request.FirstName,
@@ -139,6 +163,8 @@ namespace OrderManagement.Customers.Features
 
             await _dbContext.Customers.AddAsync(customer, cancellationToken);
 
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
             return new CustomerDto(
                 customer.Id,
                 customer.FirstName,
@@ -146,8 +172,7 @@ namespace OrderManagement.Customers.Features
                 customer.Email,
                 customer.WalletBalance,
                 customer.UserId,
-                role
-                );
+                roleName);
         }
     }
 

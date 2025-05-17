@@ -14,6 +14,7 @@
   - [Run](#run)
   - [Test](#test)
 - [Documentation Apis](#documentation-apis)
+- [Support](#support)
 
 ## The Goals of This Project
 
